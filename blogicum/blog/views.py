@@ -25,8 +25,8 @@ def select_posts():
         'author'
     ).filter(
         category__is_published=True,
-        is_published=True,
         pub_date__lte=dt.now(),
+        is_published=True
     )
 
 
@@ -44,7 +44,13 @@ def index(request):
 
 def post_detail(request, post_id):
     """Страница с информацией о посте"""
-    post = get_object_or_404(select_posts(), id=post_id)
+    post = get_object_or_404(Post.objects.select_related(
+        'category',
+        'location',
+        'author'
+    ), id=post_id)
+    if request.user.id != post.author_id:
+        post = get_object_or_404(select_posts(), id=post_id)
     form = CommentForm()
     comments = post.comments.select_related('author')
     context = {
@@ -88,7 +94,9 @@ def profile(request, username):
         'category',
         'location',
         'author'
-    ).filter(author__username=username)
+    ).filter(author__username=username).annotate(
+        comment_count=Count('comments')
+    ).all().order_by('-pub_date')
     page_obj = paginate_posts(request, posts, LIMIT_FOR_PAGES)
     context = {
         'profile': profile,
