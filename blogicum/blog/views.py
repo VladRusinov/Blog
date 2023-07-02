@@ -38,7 +38,7 @@ def index(request):
     page_obj = paginate_posts(request, posts, LIMIT_FOR_PAGES)
     context = {
         'page_obj': page_obj,
-        }
+    }
     return render(request, 'blog/index.html', context)
 
 
@@ -47,7 +47,7 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post.objects.select_related(
         'category',
         'location',
-        'author'
+        'author',
     ), id=post_id)
     if request.user.id != post.author_id:
         post = get_object_or_404(select_posts(), id=post_id)
@@ -168,7 +168,7 @@ def delete_post(request, post_id):
     context = {
         'form': form,
         'post': post
-        }
+    }
     return render(request, 'blog/create.html', context)
 
 
@@ -217,5 +217,5 @@ def delete_comment(request, post_id, comment_id):
     context = {
         'comment': comment,
         'post': post
-        }
+    }
     return render(request, 'blog/comment.html', context)
