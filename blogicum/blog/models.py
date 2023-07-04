@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
+from django.utils import timezone as dt
 
 User = get_user_model()
 
@@ -68,7 +70,8 @@ class Post(PublishModel):
         help_text=(
             'Если установить дату и время'
             ' в будущем — можно делать отложенные публикации.'
-        )
+        ),
+        default=dt.localtime,
     )
     author = models.ForeignKey(
         User,
@@ -99,21 +102,36 @@ class Post(PublishModel):
     def __str__(self):
         return self.title[:TITLE_LETTER_LIMIT]
 
+    def get_absolute_url(self):
+        return reverse('blog:post_detail', kwargs={'post_id': self.id})
+
 
 class Comment(models.Model):
     """Модель комментария"""
 
-    text = models.TextField('Текст комментария')
+    text = models.TextField(
+        'Текст комментария',
+    )
     post = models.ForeignKey(
         Post,
+        verbose_name='Публикация',
         on_delete=models.CASCADE,
-        related_name='comments',
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(
+        'Дата и время создания',
+        auto_now_add=True
+    )
+    author = models.ForeignKey(
+        User,
+        verbose_name='Автор',
+        on_delete=models.CASCADE
+    )
 
     class Meta:
         ordering = ('created_at',)
         default_related_name = 'comments'
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.text[:TITLE_LETTER_LIMIT]

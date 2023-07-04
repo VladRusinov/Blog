@@ -1,6 +1,7 @@
 from django.contrib import admin
+from django.db.models.aggregates import Count
 
-from .models import Category, Location, Post
+from .models import Category, Comment, Location, Post
 
 
 @admin.register(Category)
@@ -38,6 +39,7 @@ class PostAdmin(admin.ModelAdmin):
         'location',
         'category',
         'is_published',
+        'comments'
     )
 
     list_display_links = (
@@ -52,3 +54,18 @@ class PostAdmin(admin.ModelAdmin):
     )
     search_fields = ('title',)
     list_filter = ('category', 'location', 'author')
+
+    @admin.display(description='колличество комментариев',)
+    def comments(self, obj):
+        return len(obj.comments.annotate(Count('id')))
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'text',
+        'post',
+        'author'
+    )
+    search_fields = ('author__username',)
+    list_filter = ('post', 'author')
