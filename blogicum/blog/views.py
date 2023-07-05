@@ -41,11 +41,7 @@ def count_comments(obj):
 
 
 def select_posts():
-    return Post.objects.select_related(
-        'category',
-        'location',
-        'author'
-    ).filter(
+    return post_select_realted().filter(
         category__is_published=True,
         pub_date__lte=dt.now(),
         is_published=True
