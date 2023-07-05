@@ -5,8 +5,8 @@ from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone as dt
 
+from blog.forms import CommentForm, EditProfileForm, PostForm
 from blog.models import Category, Comment, Post, User
-from .forms import CommentForm, EditProfileForm, PostForm
 
 LIMIT_FOR_PAGES = 10
 
@@ -24,6 +24,14 @@ def check_auth(request):
         pub_date__lte=dt.now(),
         is_published=True
     ) | Q(author_id=request.user.id)
+
+
+def post_select_realted():
+    return Post.objects.select_related(
+        'category',
+        'location',
+        'author'
+    )
 
 
 def count_comments(obj):
@@ -56,12 +64,10 @@ def index(request):
 
 def post_detail(request, post_id):
     """Страница с информацией о посте"""
-    post = get_object_or_404(Post.objects.select_related(
-        'category',
-        'location',
-        'author',
-    ),
-        Q(id=post_id), check_auth(request)
+    post = get_object_or_404(
+        post_select_realted(),
+        Q(id=post_id),
+        check_auth(request)
     )
     form = CommentForm()
     comments = post.comments.select_related('author')
@@ -79,14 +85,7 @@ def category_posts(request, category_slug):
         Category,
         is_published=True, slug=category_slug
     )
-    posts = count_comments(category.posts.select_related(
-        'category',
-        'location',
-        'author'
-    ).filter(
-        is_published=True,
-        pub_date__lte=dt.now(),
-    ))
+    posts = select_posts().filter(category__slug=category_slug)
     page_obj = paginate_posts(request, posts, LIMIT_FOR_PAGES)
     context = {
         'category': category,
@@ -102,11 +101,7 @@ def profile(request, username):
         username=username,
     )
 
-    posts = count_comments(Post.objects.select_related(
-        'category',
-        'location',
-        'author'
-    ).filter(
+    posts = count_comments(post_select_realted().filter(
         Q(author__username=username),
         check_auth(request)
     ))

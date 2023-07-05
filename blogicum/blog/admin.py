@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models.aggregates import Count
 
 from .models import Category, Comment, Location, Post
 
@@ -57,7 +56,7 @@ class PostAdmin(admin.ModelAdmin):
 
     @admin.display(description='колличество комментариев',)
     def comments(self, obj):
-        return len(obj.comments.annotate(Count('id')))
+        return obj.comments.count()
 
 
 @admin.register(Comment)
