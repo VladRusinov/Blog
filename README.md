@@ -37,7 +37,11 @@ pip install -r requirements.txt
 Запустить проект:
 
 ```
-docker compose up
+cd blogicum
+```
+
+```
+python manage.py runserver
 ```
 
 ## Автор:
