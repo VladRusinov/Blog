@@ -1,6 +1,6 @@
-[![Typing SVG align="center"](https://readme-typing-svg.herokuapp.com?color=%2336BCF7&lines=BLOGICUM)](https://git.io/typing-svg)
+[![Typing SVG align="center"](https://readme-typing-svg.herokuapp.com?color=%2336BCF7&lines=BLOG)](https://git.io/typing-svg)
 ## О проекте
-проект blogicum - это сайт для публикации блогов.
+проект blog - это сайт для публикации блогов.
 
 ## Использованные технологии:
 - Python
@@ -13,7 +13,7 @@
 Клонировать репозиторий и перейти в него в командной строке:
 
 ```
-git clone https://github.com/VladRusinov/Blogicum.git
+git clone https://github.com/VladRusinov/Blog.git
 ```
 Cоздать и активировать виртуальное окружение:
 
